@@ -1,125 +1,175 @@
-# 🎬 Mehram - Browser Video Generator
+# 🎬 Mehram - Browser-Based Video Generator
 
-Mehram is a powerful, easy-to-use browser-based video generation library. Create dynamic, animated videos directly in your browser without any server-side processing.
+A powerful, lightweight browser-based video generation tool that runs entirely in your browser. No server required, no complex setup. Just pure client-side video creation magic!
 
 ## ✨ Features
 
-- 🎨 **Canvas-based rendering** - Draw high-quality frames directly on HTML5 Canvas
-- 🎬 **Animation support** - Keyframe-based animations with easing functions
-- 📝 **Text rendering** - Add stylized text to your videos
-- 🎭 **Multiple shapes** - Rectangles, circles, triangles with customizable colors
-- ⚡ **Real-time preview** - See changes instantly with the preview feature
-- 📥 **Video export** - Export videos in multiple formats
-- 🔧 **TypeScript** - Fully typed for better developer experience
-- 🚀 **No dependencies** - Uses native browser APIs
+- **Browser-Based**: Generate videos directly in your browser with zero server dependencies
+- **Real-Time Preview**: See changes instantly with live preview functionality
+- **Customizable**: Full control over dimensions, duration, colors, fonts, and animations
+- **Multiple Animations**: Choose from Fade In, Slide In, Zoom In, Rotate, or None
+- **Easy Download**: Generate and download videos in WebM format
+- **Responsive Design**: Works seamlessly on desktop and tablet devices
+- **No Installation**: Just open the HTML file and start creating!
 
 ## 🚀 Quick Start
 
-### Browser Usage
+### Method 1: Direct File Access
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/rameshprasad2251/Mehram.git
+   cd Mehram
+   ```
 
-1. Open `index.html` in your browser
-2. Use the interactive controls to:
-   - Customize video content (title, text, colors)
-   - Adjust shapes and animations
-   - Set video duration
-3. Click "Preview" to see a quick animation
-4. Click "Generate Video" to create your video
-5. Download the generated video
+2. Open `index.html` in your browser:
+   - Double-click the file, or
+   - Right-click → Open with Browser, or
+   - Use a local server: `python -m http.server 8000`
 
-### Programmatic Usage
+### Method 2: GitHub Pages
+1. Enable GitHub Pages in repository settings
+2. Set source to `main` branch
+3. Access your site at: `https://rameshprasad2251.github.io/Mehram/`
 
-```typescript
-import { VideoGenerator, CanvasRenderer } from '@rameshprasad2251/mehram';
+## 📖 Usage Guide
 
-// Create a video generator
-const video = new VideoGenerator({
-  width: 1280,
-  height: 720,
-  fps: 30,
-  duration: 10,
-  format: 'mp4'
-});
+### Configuration Panel
+- **Video Title**: Set the text that appears in your video
+- **Width/Height**: Video dimensions in pixels (default: 1280x720)
+- **Duration**: Video length in seconds (1-60 seconds)
+- **FPS**: Frames per second (15-60 FPS)
+- **Text Color**: Choose any color for your text
+- **Background Color**: Set the video background
+- **Font Size**: Adjust text size (12-120px)
+- **Animation Type**: Select animation style for text
 
-// Define a scene
-const scene = {
-  id: 'scene-1',
-  duration: 5,
-  elements: [
-    {
-      type: 'text',
-      id: 'title',
-      text: 'Hello Mehram!',
-      fontSize: 48,
-      fontFamily: 'Arial',
-      color: '#667eea',
-      x: 100,
-      y: 100,
-      width: 500,
-      height: 100,
-      animations: [
-        {
-          name: 'fadeIn',
-          startTime: 0,
-          duration: 2,
-          keyframes: [
-            { time: 0, properties: { opacity: 0 } },
-            { time: 2, properties: { opacity: 1 } }
-          ]
-        }
-      ]
-    }
-  ]
-};
+### Buttons
+- **👁️ Preview**: See real-time preview without generating a full video
+- **🎥 Generate Video**: Create a complete video file
+- **⬇️ Download Video**: Download your generated video
 
-// Add scene and render
-video.addScene(scene);
+## 🎨 Animation Types
 
-// Render with progress callback
-const videoBlob = await video.render({
-  onProgress: (progress) => console.log(`Rendering: ${progress * 100}%`)
-});
+- **None**: Static text display
+- **Fade In**: Text gradually appears
+- **Slide In**: Text slides in from the left
+- **Zoom In**: Text zooms from small to full size
+- **Rotate**: Text spins into view
 
-// Use the blob (download, upload, etc.)
+## 💾 Technical Details
+
+### Technology Stack
+- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
+- **Video Encoding**: MediaRecorder API + WebM codec
+- **Canvas**: HTML5 Canvas 2D for rendering
+- **No Dependencies**: Pure vanilla JavaScript
+
+### Browser Compatibility
+- ✅ Chrome 49+
+- ✅ Firefox 25+
+- ✅ Safari 14.1+
+- ✅ Edge 79+
+
+### Performance Notes
+- Video generation happens on your device
+- Larger resolutions and longer durations take more processing time
+- For 4K or 60+ second videos, allow extra processing time
+- Check browser console for any errors
+
+## 🔧 Customization
+
+### Modify Colors
+Edit the color values in the Configuration panel or directly in the HTML:
+```html
+<input type="color" id="textColor" value="#667eea">
+<input type="color" id="backgroundColor" value="#ffffff">
 ```
 
-## 📖 API Documentation
-
-### VideoGenerator
-
-Main class for creating and managing videos.
-
-```typescript
-new VideoGenerator(config: VideoConfig)
+### Change Default Values
+Modify the default values in input fields:
+```html
+<input type="number" id="videoWidth" value="1280" min="320">
+<input type="number" id="videoHeight" value="720" min="240">
 ```
 
-**Methods:**
-- `addScene(scene: Scene): this` - Add a scene
-- `addScenes(scenes: Scene[]): this` - Add multiple scenes
-- `clearScenes(): this` - Clear all scenes
-- `getScenes(): Scene[]` - Get current scenes
-- `render(options?: RenderOptions): Promise<Blob>` - Render video to blob
-- `preview(canvas: HTMLCanvasElement): Promise<void>` - Preview on canvas
+### Add Custom Animations
+Edit the `SimpleMehramGenerator` class in the script section to add new animation types.
 
-### Scene
+## 📁 Repository Structure
 
-A scene represents a time slice of the video with elements.
-
-```typescript
-interface Scene {
-  id: string;
-  duration: number;      // in seconds
-  elements: Element[];
-  transitions?: Transition[];
-}
+```
+Mehram/
+├── index.html          # Main application file
+├── README.md           # This file
+├── LICENSE             # MIT License
+└── docs/
+    ├── GUIDE.md        # Detailed usage guide
+    ├── API.md          # API documentation
+    └── examples/       # Example configurations
 ```
 
-## 🔄 Browser Support
+## 🐛 Troubleshooting
 
-- Chrome 60+
-- Firefox 55+
-- Safari 11+
-- Edge 79+
+### Video won't generate
+- Check browser console (F12) for errors
+- Ensure video duration is between 1-60 seconds
+- Try reducing resolution if experiencing lag
+
+### Download button disabled
+- Generate a video first using "🎥 Generate Video" button
+- Check that your browser allows downloads
+
+### Slow performance
+- Reduce video resolution
+- Lower FPS to 24 or 30
+- Reduce duration
+
+### No audio in video
+- This tool generates video-only files. Add audio in post-processing using:
+  - FFmpeg
+  - Video editing software (DaVinci Resolve, Adobe Premiere, etc.)
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how:
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙋 Support
+
+- **Issues**: Report bugs on the [GitHub Issues](https://github.com/rameshprasad2251/Mehram/issues) page
+- **Discussions**: Join the [GitHub Discussions](https://github.com/rameshprasad2251/Mehram/discussions) for questions and ideas
+- **Documentation**: Check the [docs](docs/) folder for detailed guides
+
+## 📚 Resources
+
+- [HTML5 Canvas Documentation](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
+- [MediaRecorder API](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder)
+- [WebM Format](https://www.webmproject.org/)
+
+## 🎯 Roadmap
+
+- [ ] Audio support
+- [ ] Multiple text elements
+- [ ] Image/video background support
+- [ ] Preset templates
+- [ ] MP4 export format
+- [ ] Cloud sharing capabilities
+- [ ] Mobile app version
+
+## 👨‍💻 Author
+
+**Ramesh Prasad**
+- GitHub: [@rameshprasad2251](https://github.com/rameshprasad2251)
 
 ---
 
-**Happy video generating! 🎬✨**
+Made with ❤️ for video creators everywhere. Happy creating! 🎬
