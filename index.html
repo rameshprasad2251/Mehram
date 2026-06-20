@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Mehram - Browser Video Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .panel h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="color"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="color"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        input[type="color"] {
+            height: 45px;
+            cursor: pointer;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 14px 24px;
+            font-size: 1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-preview {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-preview:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-generate {
+            background: #48bb78;
+            color: white;
+            grid-column: 1 / -1;
+        }
+
+        .btn-generate:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(72, 187, 120, 0.3);
+        }
+
+        .btn-download {
+            background: #ed8936;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #dd6b20;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(237, 137, 54, 0.3);
+        }
+
+        .btn-download:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #preview {
+            width: 100%;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            background: #f7f7f7;
+            display: block;
+        }
+
+        .preview-container {
+            position: relative;
+            background: #f7f7f7;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar.active {
+            display: block;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+            font-weight: 600;
+        }
+
+        .status.active {
+            display: block;
+        }
+
+        .status.success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status.error {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .status.info {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+
+        video {
+            width: 100%;
+            border-radius: 6px;
+            margin-top: 15px;
+            background: #000;
+        }
+
+        .element-section {
+            background: #f7f7f7;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .element-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .animation-row {
+            background: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .info-box strong {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 Mehram</h1>
+            <p>Browser-based Video Generator</p>
+        </div>
+
+        <div class="main-grid">
+            <!-- Controls Panel -->
+            <div class="panel">
+                <h2>⚙️ Configuration</h2>
+
+                <div class="form-group">
+                    <label for="videoTitle">Video Title</label>
+                    <input type="text" id="videoTitle" value="Welcome to Mehram!" placeholder="Enter video title">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="videoWidth">Width (px)</label>
+                        <input type="number" id="videoWidth" value="1280" min="320">
+                    </div>
+                    <div class="form-group">
+                        <label for="videoHeight">Height (px)</label>
+                        <input type="number" id="videoHeight" value="720" min="240">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="videoDuration">Duration (seconds)</label>
+                        <input type="number" id="videoDuration" value="5" min="1" max="60">
+                    </div>
+                    <div class="form-group">
+                        <label for="videoFPS">FPS</label>
+                        <input type="number" id="videoFPS" value="30" min="15" max="60">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="textColor">Text Color</label>
+                    <input type="color" id="textColor" value="#667eea">
+                </div>
+
+                <div class="form-group">
+                    <label for="backgroundColor">Background Color</label>
+                    <input type="color" id="backgroundColor" value="#ffffff">
+                </div>
+
+                <div class="form-group">
+                    <label for="fontSize">Font Size</label>
+                    <input type="number" id="fontSize" value="48" min="12" max="120">
+                </div>
+
+                <div class="form-group">
+                    <label for="animationType">Animation Type</label>
+                    <select id="animationType">
+                        <option value="none">None</option>
+                        <option value="fadeIn">Fade In</option>
+                        <option value="slideIn">Slide In</option>
+                        <option value="zoomIn">Zoom In</option>
+                        <option value="rotate">Rotate</option>
+                    </select>
+                </div>
+
+                <div class="info-box">
+                    <strong>💡 Tip:</strong> Adjust the settings above and click Preview to see changes in real-time, or Generate to create a downloadable video.
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-preview" onclick="previewVideo()">👁️ Preview</button>
+                    <button class="btn-generate" onclick="generateVideo()">🎥 Generate Video</button>
+                </div>
+            </div>
+
+            <!-- Preview & Output Panel -->
+            <div class="panel">
+                <h2>👀 Preview & Output</h2>
+
+                <div class="preview-container">
+                    <canvas id="preview"></canvas>
+                </div>
+
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div class="status" id="status"></div>
+
+                <button class="btn-download" id="downloadBtn" onclick="downloadVideo()" disabled>⬇️ Download Video</button>
+
+                <div id="videoOutput"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let generatedVideoBlob = null;
+
+        class SimpleMehramGenerator {
+            constructor(config) {
+                this.config = config;
+                this.canvas = document.getElementById('preview');
+                this.ctx = this.canvas.getContext('2d');
+                this.canvas.width = config.width;
+                this.canvas.height = config.height;
+            }
+
+            renderFrame(title, animationType, progress) {
+                this.ctx.fillStyle = this.config.backgroundColor;
+                this.ctx.fillRect(0, 0, this.config.width, this.config.height);
+
+                // Apply animations
+                this.ctx.save();
+                
+                let opacity = 1;
+                let scale = 1;
+                let translateX = 0;
+                let rotation = 0;
+
+                switch (animationType) {
+                    case 'fadeIn':
+                        opacity = Math.min(1, progress * 2);
+                        break;
+                    case 'slideIn':
+                        translateX = (1 - Math.min(1, progress * 2)) * 200;
+                        break;
+                    case 'zoomIn':
+                        scale = 0.8 + Math.min(1, progress * 2) * 0.2;
+                        break;
+                    case 'rotate':
+                        rotation = progress * Math.PI * 2;
+                        break;
+                }
+
+                // Transform
+                const centerX = this.config.width / 2;
+                const centerY = this.config.height / 2;
+                
+                this.ctx.translate(centerX + translateX, centerY);
+                this.ctx.rotate(rotation);
+                this.ctx.scale(scale, scale);
+                this.ctx.translate(-centerX, -centerY);
+
+                this.ctx.globalAlpha = opacity;
+
+                // Draw text
+                this.ctx.font = `bold ${this.config.fontSize}px Arial, sans-serif`;
+                this.ctx.fillStyle = this.config.textColor;
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(title, this.config.width / 2, this.config.height / 2);
+
+                this.ctx.restore();
+            }
+
+            async render(title, animationType, onProgress) {
+                const totalFrames = Math.ceil(this.config.duration * this.config.fps);
+                const frames = [];
+
+                for (let i = 0; i < totalFrames; i++) {
+                    const progress = i / totalFrames;
+                    this.renderFrame(title, animationType, progress);
+                    
+                    const frame = this.ctx.getImageData(0, 0, this.config.width, this.config.height);
+                    frames.push(frame);
+
+                    if (onProgress) {
+                        onProgress((i + 1) / totalFrames);
+                    }
+
+                    // Allow UI to update
+                    await new Promise(resolve => setTimeout(resolve, 0));
+                }
+
+                return await this.encodeVideo(frames);
+            }
+
+            async encodeVideo(frames) {
+                // For browser playback, we'll create a simple WebP/canvas sequence
+                // In production, you'd use FFmpeg.wasm or similar
+                const canvas = this.canvas;
+                const stream = canvas.captureStream(this.config.fps);
+                
+                return new Promise((resolve) => {
+                    const recorder = new MediaRecorder(stream, {
+                        mimeType: 'video/webm'
+                    });
+
+                    const chunks = [];
+                    recorder.ondataavailable = (e) => chunks.push(e.data);
+                    recorder.onstop = () => {
+                        const blob = new Blob(chunks, { type: 'video/webm' });
+                        resolve(blob);
+                    };
+
+                    recorder.start();
+
+                    // Render frames into canvas over time
+                    let frameIndex = 0;
+                    const renderLoop = () => {
+                        if (frameIndex < frames.length) {
+                            const frame = frames[frameIndex];
+                            this.ctx.putImageData(frame, 0, 0);
+                            frameIndex++;
+                            setTimeout(renderLoop, 1000 / this.config.fps);
+                        } else {
+                            recorder.stop();
+                        }
+                    };
+
+                    renderLoop();
+                });
+            }
+        }
+
+        function getConfig() {
+            return {
+                width: parseInt(document.getElementById('videoWidth').value),
+                height: parseInt(document.getElementById('videoHeight').value),
+                duration: parseInt(document.getElementById('videoDuration').value),
+                fps: parseInt(document.getElementById('videoFPS').value),
+                backgroundColor: document.getElementById('backgroundColor').value,
+                textColor: document.getElementById('textColor').value,
+                fontSize: parseInt(document.getElementById('fontSize').value)
+            };
+        }
+
+        function showStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status active ${type}`;
+        }
+
+        function updateProgress(progress) {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            progressBar.classList.add('active');
+            progressFill.style.width = (progress * 100) + '%';
+        }
+
+        function previewVideo() {
+            const config = getConfig();
+            const title = document.getElementById('videoTitle').value;
+            const animationType = document.getElementById('animationType').value;
+
+            showStatus('🎬 Rendering preview...', 'info');
+
+            const generator = new SimpleMehramGenerator(config);
+            generator.renderFrame(title, animationType, 0.5);
+
+            showStatus('✅ Preview ready!', 'success');
+        }
+
+        async function generateVideo() {
+            try {
+                const config = getConfig();
+                const title = document.getElementById('videoTitle').value;
+                const animationType = document.getElementById('animationType').value;
+
+                if (!title.trim()) {
+                    showStatus('❌ Please enter a video title', 'error');
+                    return;
+                }
+
+                showStatus('🎬 Generating video... This may take a moment', 'info');
+
+                const generator = new SimpleMehramGenerator(config);
+                generatedVideoBlob = await generator.render(title, animationType, updateProgress);
+
+                document.getElementById('progressBar').classList.remove('active');
+                document.getElementById('downloadBtn').disabled = false;
+
+                // Display video preview
+                const videoUrl = URL.createObjectURL(generatedVideoBlob);
+                const videoOutput = document.getElementById('videoOutput');
+                videoOutput.innerHTML = `<video controls><source src="${videoUrl}" type="video/webm"></video>`;
+
+                showStatus('✅ Video generated successfully! Ready to download.', 'success');
+            } catch (error) {
+                console.error('Error generating video:', error);
+                showStatus('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        function downloadVideo() {
+            if (!generatedVideoBlob) {
+                showStatus('❌ No video to download', 'error');
+                return;
+            }
+
+            const url = URL.createObjectURL(generatedVideoBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mehram-${Date.now()}.webm`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showStatus('✅ Video downloaded!', 'success');
+        }
+
+        // Initial preview
+        document.addEventListener('DOMContentLoaded', () => {
+            previewVideo();
+        });
+    </script>
+</body>
+</html>
